@@ -36,7 +36,7 @@
         "symfony/validator": "*",
         "symfony/web-link": "*",
         "symfony/yaml": "*",
-        "doctrine/doctrine-bundle": "~2.3.2"
+        "doctrine/doctrine-bundle": "^2.4"
     },
     "require-dev": {
     },
