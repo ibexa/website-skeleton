@@ -83,7 +83,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": true,
-            "require": "5.3.*",
+            "require": "5.3.7",
             "endpoint": "https://flex.ibexa.co"
         },
         "branch-alias": {
