@@ -9,7 +9,7 @@
         "php": ">=7.3",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "symfony/flex": "^1.3.1"
+        "symfony/flex": "^1.17|^2"
     },
     "flex-require": {
         "sensio/framework-extra-bundle": "^6.1",
@@ -47,6 +47,11 @@
         "symfony/test-pack": "*"
     },
     "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "symfony/flex": true,
+            "symfony/runtime": true
+        },
         "optimize-autoloader": true,
         "preferred-install": {
             "*": "dist"
@@ -83,8 +88,8 @@
     "extra": {
         "symfony": {
             "allow-contrib": true,
-            "require": "5.4.*",
-            "endpoint": "https://flex.ibexa.co"
+            "endpoint": "https://flex.ibexa.co",
+            "require": "5.4.*"
         },
         "branch-alias": {
             "dev-main": "3.3.x-dev"
