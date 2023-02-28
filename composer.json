@@ -12,52 +12,21 @@
         "symfony/flex": "^1.17|^2"
     },
     "flex-require": {
-        "sensio/framework-extra-bundle": "^6.1",
-        "symfony/asset": "*",
         "symfony/console": "*",
         "symfony/dotenv": "*",
-        "symfony/dom-crawler": "*",
-        "symfony/error-handler": "*",
-        "symfony/expression-language": "*",
-        "symfony/form": "*",
         "symfony/framework-bundle": "*",
-        "symfony/http-client": "*",
-        "symfony/intl": "*",
-        "symfony/mailer": "*",
-        "symfony/mime": "*",
-        "symfony/monolog-bundle": "^3.1",
-        "symfony/notifier": "*",
-        "symfony/orm-pack": "*",
-        "symfony/password-hasher": "*",
-        "symfony/process": "*",
         "symfony/runtime": "*",
-        "symfony/security-bundle": "*",
-        "symfony/serializer-pack": "*",
-        "symfony/string": "*",
-        "symfony/translation": "*",
-        "symfony/twig-bridge": "*",
-        "symfony/twig-pack": "*",
-        "symfony/validator": "*",
-        "symfony/var-exporter": "*",
-        "symfony/web-link": "*",
-        "symfony/yaml": "*",
-        "doctrine/doctrine-bundle": "^2.4"
+        "symfony/yaml": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9 || ^10"
-    },
-    "flex-require-dev": {
-        "symfony/debug-pack": "*",
-        "symfony/maker-bundle": "^1.0",
-        "symfony/profiler-pack": "*",
-        "symfony/test-pack": "*"
     },
     "config": {
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
+            "ibexa/post-install": true,
+            "php-http/discovery": true,
             "symfony/flex": true,
-            "symfony/runtime": true,
-            "ibexa/post-install": true
+            "symfony/runtime": true
         },
         "optimize-autoloader": true,
         "preferred-install": {
@@ -81,7 +50,8 @@
         "symfony/polyfill-php72": "*"
     },
     "scripts": {
-        "auto-scripts": [],
+        "auto-scripts": [
+        ],
         "post-install-cmd": [
             "@auto-scripts"
         ],
@@ -95,8 +65,8 @@
     "extra": {
         "symfony": {
             "allow-contrib": true,
-            "endpoint": "https://api.github.com/repos/ibexa/recipes-dev/contents/index.json?ref=flex/main",
-            "require": "5.4.*"
+            "require": "5.4.*",
+            "endpoint": "https://api.github.com/repos/ibexa/recipes-dev/contents/index.json?ref=flex/main"
         },
         "branch-alias": {
             "dev-main": "4.5.x-dev"
