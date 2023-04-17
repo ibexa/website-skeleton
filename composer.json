@@ -3,7 +3,7 @@
     "type": "project",
     "license": "(GPL-2.0-only or proprietary)",
     "description": "A skeleton to start a new Ibexa DXP website",
-    "minimum-stability": "dev",
+    "minimum-stability": "beta",
     "prefer-stable": true,
     "require": {
         "php": ">=7.4",
