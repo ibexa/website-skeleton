@@ -69,7 +69,7 @@
             "endpoint": "https://api.github.com/repos/ibexa/recipes-dev/contents/index.json?ref=flex/main"
         },
         "branch-alias": {
-            "dev-main": "4.5.x-dev"
+            "dev-main": "4.6.x-dev"
         }
     }
 }
