@@ -3,8 +3,6 @@
     "type": "project",
     "license": "(GPL-2.0-only or proprietary)",
     "description": "A skeleton to start a new Ibexa DXP website",
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "require": {
         "php": ">=7.4",
         "ext-ctype": "*",
@@ -66,7 +64,7 @@
         "symfony": {
             "allow-contrib": true,
             "require": "5.4.*",
-            "endpoint": "https://api.github.com/repos/ibexa/recipes-dev/contents/index.json?ref=flex/main"
+            "endpoint": "https://api.github.com/repos/ibexa/recipes/contents/index.json?ref=flex/main"
         },
         "branch-alias": {
             "dev-main": "4.4.x-dev"
