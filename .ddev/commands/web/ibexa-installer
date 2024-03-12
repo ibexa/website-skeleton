@@ -1,0 +1,131 @@
+#!/bin/bash
+
+## #ddev-generated
+## Description: Runs interactive installer for Ibexa DXP
+## Usage: ibexa-installer
+## Example: ddev ibexa-installer
+
+source .ddev/commands/web/.utils
+
+if [ -f "$IBEXA_DXP_INSTALLED_LOCK_FILE" ] || [ ! -f "$INSTANCE_SETTINGS_FILE" ]
+then
+  # Nothing to do
+  exit 0
+fi
+
+source "$INSTANCE_SETTINGS_FILE"
+
+#
+# Default settings
+#
+
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=publish
+
+#
+# Main
+#
+
+if [ "$VERBOSE_INSTALL" = false ]; then
+    clear
+fi
+
+# Workaround to the issue on Mac OS
+git config --global --add safe.directory /var/www/html
+
+banner "Interactive Installation Tool"
+
+echo "🚀 Installing `(bold "$PRODUCT_TYPE v$PRODUCT_VERSION")`"
+
+if [ "$DXP_EDITION" != "oss" ] || [ "$INSTALL_SAMPLE_DATA" = true ]; then
+    echo "Adding updates.ibexa.co repository to composer.json"
+    echo "You might be prompted for repository credentials during installation"
+    execute_with_spinner "Updating composer.json..." composer config repositories.ibexa composer https://updates.ibexa.co
+fi
+
+composer config extra.runtime.error_handler "\\Ibexa\\Contracts\\Core\\MVC\\Symfony\\ErrorHandler\\Php82HideDeprecationsErrorHandler"
+
+execute_with_spinner "Installing ibexa/${DXP_EDITION} package..." composer require "ibexa/$DXP_EDITION:$PRODUCT_VERSION" -W --no-scripts --no-interaction
+echo "✅ Package ibexa/${DXP_EDITION} installed successfully"
+
+execute_with_spinner "Initializing git repository..." git init > /dev/null && git add . > /dev/null && git commit -m "Installed Ibexa DXP" > /dev/null
+echo "✅ Initialized git repository"
+
+execute_with_spinner "Installing Flex recipe..." composer recipes:install ibexa/${DXP_EDITION} --force --reset
+echo "✅ Installed Flex recipe"
+
+# Install test fixtures
+if [ "$INSTALL_SAMPLE_DATA" = true ]; then
+    execute_with_spinner "Installing ibexa/test-fixtures package" composer require ibexa/test-fixtures:"$PRODUCT_VERSION" --no-scripts --no-interaction
+    echo "✅ Installed ibexa/test-fixtures package"
+fi
+
+# Install profiler
+if [ "$INSTALL_PROFILER" = true ]; then
+    execute_with_spinner "Installing Symfony Profiler" composer require symfony/profiler-pack --no-scripts --no-interaction
+    echo "✅ Installed Symfony Profiler"
+fi
+
+execute_with_spinner "Running Composer scripts..." composer run post-update-cmd
+echo "✅ Scripts finished successfully"
+
+#execute_with_spinner "Dropping database for fresh install" php bin/console doctrine:database:drop --force
+#echo "✅ Database dropped"
+#
+#execute_with_spinner "Removing existing migrations" rm -rf src/Migrations/Ibexa
+#echo "✅ Migrations removed"
+#
+#execute_with_spinner "Clearing cache" php bin/console c:c --env=prod
+#echo "✅ Cache cleared"
+
+execute_with_spinner "Installing database..." php bin/console ibexa:install
+echo "✅ Database installed"
+
+if [ "$SEARCH_ENGINE" = "solr" ] || [ "$SEARCH_ENGINE" = "elasticsearch" ]; then
+    if [ "$SEARCH_ENGINE" = "elasticsearch" ]; then
+        execute_with_spinner "Putting Elasticsearch index template" php bin/console ibexa:elasticsearch:put-index-template
+        echo "✅ Put Elasticsearch index template"
+    fi
+    execute_with_spinner "Reindexing search data" php bin/console ibexa:reindex
+    echo "✅ Reindexed search data"
+fi
+
+# Setup sample data
+if [ "$INSTALL_SAMPLE_DATA" = true ]; then
+    execute_with_spinner "Installing sample data" php bin/console ibexa:test-fixtures:setup
+    echo "✅ Installed sample data"
+fi
+
+execute_with_spinner "Generating GraphQL schema" php bin/console ibexa:graphql:generate-schema
+echo "✅ GraphQL schema generated"
+
+# Setup Ibexa Cloud
+if [ "$INSTALL_CLOUD_CONFIG" = true ]; then
+    execute_with_spinner "Installing Ibexa Cloud configuration" composer ibexa:setup --platformsh
+    echo "✅ Installed Ibexa Cloud configuration"
+fi
+
+echo "✅ All done! You can now access your new project using provided details:"
+
+gum style --border double --margin "1 1" --padding "1 1" --width 60 \
+    "Website:        ` bold --bold "$DDEV_PRIMARY_URL" `" \
+    "Backoffice:     ` bold --bold "$DDEV_PRIMARY_URL/admin" `" \
+    "" \
+    "Username:       ` bold "admin" `" \
+    "Password:       ` bold "publish" `" \
+    "" \
+    "Run `(bold "ddev describe")` for more details"
+
+echo "📧  Run `(bold "ddev mailpit")` to launch Mailpit interface and see catched e-mails"
+echo "🗄️   Run `(bold "ddev get ddev/ddev-phpmyadmin")` to install PHPMyAdmin"
+echo "🗄️   Run `(bold "ddev querious|sequelace|tableplus|dbeaver")` to launch database client apps"
+echo ""
+echo "📦️  Run `(bold "ddev composer ...")` to execute Composer commands"
+echo "🐘️  Run `(bold "ddev php ...")` to execute PHP scripts"
+echo "🐞️  Run `(bold "ddev xdebug on|off")` to control Xdebug"
+echo ""
+echo "🚀️  Run `(bold "ddev start")` to start containers"
+echo "⛔️  Run `(bold "ddev stop")` to stop containers"
+echo "🔄️  Run `(bold "ddev restart")` to restart containers"
+
+echo "`date`" > ./.ddev/.ibexa-dxp-installed

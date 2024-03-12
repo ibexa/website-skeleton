@@ -1,0 +1,365 @@
+#!/bin/bash
+
+## #ddev-generated
+## Description: Runs service configurator
+## Usage: ibexa-configurator
+## Example: ddev ibexa-configurator
+
+source .ddev/commands/web/.utils
+
+#
+# Default settings
+#
+
+LABEL_INSTALL_SAMPLE_DATA="Yes"
+LABEL_INSTALL_PROFILER="Yes"
+IBEXA_DXP_PRODUCTS=("oss" "headless" "experience" "commerce")
+
+[ -z "$PHP_VERSION" ] && PHP_VERSION="8.3"
+[ -z "$DATABASE" ] && DATABASE="mariadb"
+[ -z "$DATABASE_VERSION" ] && DATABASE_VERSION="10.11"
+[ -z "$NODE_VERSION" ] && NODE_VERSION="20"
+[ -z "$HTTP_CACHE" ] && HTTP_CACHE="varnish"
+[ -z "$HTTP_SERVER" ] && HTTP_SERVER="nginx-fpm"
+[ -z "$APP_CACHE" ] && APP_CACHE="redis"
+[ -z "$SEARCH_ENGINE" ] && SEARCH_ENGINE="elasticsearch"
+[ -z "$INSTALL_SAMPLE_DATA" ] && INSTALL_SAMPLE_DATA=true
+[ -z "$INSTALL_PROFILER" ] && INSTALL_PROFILER=true
+[ -z "$APP_ENV" ] && APP_ENV="prod"
+[ -z "$INSTALL_CLOUD_CONFIG" ] && INSTALL_CLOUD_CONFIG=true
+
+if [ -f "$INSTANCE_SETTINGS_FILE" ]; then
+  # Nothing to do
+  exit 0
+fi
+
+function detect_version() {
+    if [ "$DXP_EDITION" != "website" ] && [ -f composer.lock ]; then
+        MIN_STABILITY="`(jq -r '."minimum-stability"' composer.lock)`"
+        PRODUCT_VERSION="`(jq -r '.packages[] | select(.name == "ibexa/oss") | .version' composer.lock | sed 's/^v//')`"
+    else
+        MIN_STABILITY="`(jq -r '."minimum-stability"' composer.json)`"
+        PRODUCT_VERSION="`(jq -r '.extra."branch-alias"."dev-main"' composer.json)`"
+    fi
+}
+
+function detect_product() {
+    PROJECT_NAME=$(jq -r '.name' composer.json)
+    # Strip "ibexa/" and "-skeleton" parts from the value
+    DXP_EDITION=$(echo $PROJECT_NAME | sed 's/ibexa\///;s/-skeleton//')
+    case "$DXP_EDITION" in
+        "commerce")
+            PRODUCT_TYPE="Ibexa DXP Commerce"
+            ;;
+        "experience")
+            PRODUCT_TYPE="Ibexa DXP Experience"
+            ;;
+        "headless")
+            PRODUCT_TYPE="Ibexa DXP Headless"
+            ;;
+        "oss")
+            PRODUCT_TYPE="Ibexa OSS"
+            ;;
+    esac
+}
+
+function configure_product() {
+    if [ "$DXP_EDITION" = "website" ]; then
+        choose "`(faint "[Product]")` `(bold "Select Ibexa product")`" "Ibexa OSS" "Ibexa DXP Headless" "Ibexa DXP Experience" "Ibexa DXP Commerce"
+        PRODUCT_TYPE="$SELECT"
+        case "$SELECT" in
+            "Ibexa DXP Commerce")
+                DXP_EDITION=commerce
+                ;;
+            "Ibexa DXP Experience")
+                DXP_EDITION=experience
+                ;;
+            "Ibexa DXP Headless")
+                DXP_EDITION=headless
+                ;;
+            "Ibexa OSS")
+                DXP_EDITION=oss
+                ;;
+        esac
+    fi
+}
+
+function configure_php() {
+    choose "`(faint "[Setup]")` `(bold "Select PHP version")`" "8.3 (recommended)" "8.2" "8.1"
+    case "$SELECT" in
+        "8.3 (recommended)")
+            PHP_VERSION="8.3"
+            ;;
+        "8.2")
+            PHP_VERSION="8.2"
+            ;;
+        "8.1")
+            PHP_VERSION="8.1"
+            ;;
+    esac
+}
+
+function configure_node() {
+    choose "`(faint "[Setup]")` `(bold "Select Node version")`" "20 (recommended)" "18" "21" "22"
+    case "$SELECT" in
+        "20 (recommended)")
+            NODE_VERSION="20"
+            ;;
+        "18")
+            NODE_VERSION="18"
+            ;;
+        "21")
+            NODE_VERSION="21"
+            ;;
+        "22")
+            NODE_VERSION="22"
+            ;;
+    esac
+}
+
+function configure_http_server() {
+    choose "`(faint "[Setup]")` `(bold "Select HTTP server")`" "nginx (recommended)" "Apache"
+    case "$SELECT" in
+        "nginx (recommended)")
+            HTTP_SERVER="nginx-fpm"
+            ;;
+        "Apache")
+            HTTP_SERVER="apache-fpm"
+            ;;
+    esac
+}
+
+function configure_http_cache() {
+    choose "`(faint "[Setup]")` `(bold "Select HTTP cache")`" "Varnish (recommended)" "Symfony"
+    case "$SELECT" in
+        "Varnish (recommended)")
+            HTTP_CACHE="varnish"
+            ;;
+        "Symfony")
+            HTTP_CACHE="symfony"
+            ;;
+    esac
+}
+
+function configure_database() {
+    choose "`(faint "[Setup]")` `(bold "Select database platform")`" "MariaDB (recommended)" "MySQL" "PostgreSQL"
+    case "$SELECT" in
+        "MariaDB (recommended)")
+            DATABASE="mariadb"
+            configure_mariadb_version
+            ;;
+        "MySQL")
+            DATABASE="mysql"
+            DATABASE_VERSION="8.0"
+            ;;
+        "PostgreSQL")
+            DATABASE="postgres"
+            configure_postgres_version
+            ;;
+    esac
+}
+
+function configure_mariadb_version() {
+    choose "`(faint "[Setup]")` `(bold "Select MariaDB version")`" "10.11 (recommended)" "10.3"
+    case "$SELECT" in
+        "10.11 (recommended)")
+            DATABASE_VERSION="10.11"
+            ;;
+        "10.3")
+            DATABASE_VERSION="10.3"
+            ;;
+    esac
+}
+
+function configure_postgres_version() {
+    choose "`(faint "[Setup]")` `(bold "Select PostgreSQL version")`" "16 (recommended)" "15" "14" "13" "12" "11" "10"
+    case "$SELECT" in
+        "16 (recommended)")
+            DATABASE_VERSION="16"
+            ;;
+        "15")
+            DATABASE_VERSION="15"
+            ;;
+        "14")
+            DATABASE_VERSION="14"
+            ;;
+        "13")
+            DATABASE_VERSION="13"
+            ;;
+        "12")
+            DATABASE_VERSION="12"
+            ;;
+        "11")
+            DATABASE_VERSION="11"
+            ;;
+        "10")
+            DATABASE_VERSION="10"
+            ;;
+    esac
+}
+
+function configure_app_cache() {
+    choose "`(faint "[Setup]")` `(bold "Select application cache")`" "Redis (recommended)" "Memcached" "Filesystem"
+    case "$SELECT" in
+        "Redis (recommended)")
+            APP_CACHE="redis"
+            ;;
+        "Memcached")
+            APP_CACHE="memcached"
+            ;;
+        "Filesystem")
+            APP_CACHE="filesystem"
+            ;;
+    esac
+}
+
+function configure_search_engine() {
+    choose "`(faint "[Setup]")` `(bold "Select search engine")`" "Elasticsearch (recommended)" "Solr" "Legacy"
+    case "$SELECT" in
+        "Elasticsearch (recommended)")
+            SEARCH_ENGINE="elasticsearch"
+            ;;
+        "Solr")
+            SEARCH_ENGINE="solr"
+            ;;
+        "Legacy")
+            SEARCH_ENGINE="legacy"
+            ;;
+    esac
+}
+
+function configure_sample_data() {
+    if [ "$DXP_EDITION" != "oss" ]; then
+        choose "`(faint "[Instance]")` `(bold "Install sample data?")`" "Yes (recommended)" "No"
+        case "$SELECT" in
+            "Yes (recommended)")
+                INSTALL_SAMPLE_DATA=true
+                LABEL_INSTALL_SAMPLE_DATA="Yes"
+                ;;
+            "No")
+                INSTALL_SAMPLE_DATA=false
+                LABEL_INSTALL_SAMPLE_DATA="No"
+                ;;
+        esac
+    else
+        # OSS is incompatible with ibexa/test-fixtures
+        INSTALL_SAMPLE_DATA=false
+        LABEL_INSTALL_SAMPLE_DATA="No"
+    fi
+}
+
+function configure_profiler() {
+    choose "`(faint "[Instance]")` `(bold "Install Symfony profiler?")`" "No (recommended)" "Yes"
+    case "$SELECT" in
+        "No (recommended)")
+            INSTALL_PROFILER=false
+            LABEL_INSTALL_PROFILER="No"
+            ;;
+        "Yes")
+            INSTALL_PROFILER=true
+            LABEL_INSTALL_PROFILER="Yes"
+            ;;
+    esac
+}
+
+function configure_app_env() {
+    choose "`(faint "[Instance]")` `(bold "Select app environment")`" "prod (recommended)" "dev"
+    case "$SELECT" in
+        "prod (recommended)")
+            APP_ENV=prod
+            ;;
+        "dev")
+            APP_ENV=dev
+            ;;
+    esac
+}
+
+function configure_cloud() {
+    choose "`(faint "[Instance]")` `(bold "Install Ibexa Cloud configuration?")`" "Yes (recommended)" "No"
+    case "$SELECT" in
+        "Yes (recommended)")
+            INSTALL_CLOUD_CONFIG=true
+            ;;
+        "No")
+            INSTALL_CLOUD_CONFIG=false
+            ;;
+    esac
+}
+
+function print_selected_settings() {
+    echo "${1}" # print title
+
+    echo "$PHP_VERSION,$NODE_VERSION,$HTTP_SERVER,$HTTP_CACHE,$DATABASE ($DATABASE_VERSION),$APP_CACHE,$SEARCH_ENGINE,$LABEL_INSTALL_SAMPLE_DATA" \
+        | gum table --print --columns "PHP,Node,Server,HTTP Cache,Database,Cache,Search engine,Sample data"
+
+    echo ""
+}
+
+function select_configuration() {
+    configure_php
+    configure_node
+    configure_http_server
+    configure_http_cache
+    configure_database
+    configure_app_cache
+    configure_search_engine
+    configure_sample_data
+    configure_profiler
+    configure_app_env
+    configure_cloud
+
+    print_selected_settings "`gum style --bold --underline -- "Your configuration:"`"
+
+    if ! gum confirm "Confirm these settings?" ;
+    then
+        select_configuration
+    fi
+}
+
+function save_changes() {
+    touch "$INSTANCE_SETTINGS_FILE"
+
+    echo "DXP_EDITION=\"$DXP_EDITION\"" >> $INSTANCE_SETTINGS_FILE
+    echo "PRODUCT_TYPE=\"$PRODUCT_TYPE\"" >> $INSTANCE_SETTINGS_FILE
+    echo "PRODUCT_VERSION=\"$PRODUCT_VERSION\"" >> $INSTANCE_SETTINGS_FILE
+    echo "PHP_VERSION=\"$PHP_VERSION\"" >> $INSTANCE_SETTINGS_FILE
+    echo "NODE_VERSION=\"$NODE_VERSION\"" >> $INSTANCE_SETTINGS_FILE
+    echo "DATABASE=\"$DATABASE\"" >> $INSTANCE_SETTINGS_FILE
+    echo "DATABASE_VERSION=\"$DATABASE_VERSION\"" >> $INSTANCE_SETTINGS_FILE
+    echo "HTTP_CACHE=\"$HTTP_CACHE\"" >> $INSTANCE_SETTINGS_FILE
+    echo "APP_CACHE=\"$APP_CACHE\"" >> $INSTANCE_SETTINGS_FILE
+    echo "SEARCH_ENGINE=\"$SEARCH_ENGINE\"" >> $INSTANCE_SETTINGS_FILE
+    echo "INSTALL_SAMPLE_DATA=$INSTALL_SAMPLE_DATA" >> $INSTANCE_SETTINGS_FILE
+    echo "INSTALL_PROFILER=$INSTALL_PROFILER" >> $INSTANCE_SETTINGS_FILE
+    echo "APP_ENV=\"$APP_ENV\"" >> $INSTANCE_SETTINGS_FILE
+    echo "HTTP_SERVER=\"$HTTP_SERVER\"" >> $INSTANCE_SETTINGS_FILE
+    echo "INSTALL_CLOUD_CONFIG=$INSTALL_CLOUD_CONFIG" >> $INSTANCE_SETTINGS_FILE
+}
+
+#
+# Main
+#
+
+clear
+
+banner "Interactive Installation Tool"
+
+bold "⚠️  This tool is experimental. Do not use on production servers."
+echo ""
+
+detect_product
+detect_version
+
+configure_product
+
+print_selected_settings "`gum style --bold --underline -- "Recommended configuration:"`"
+
+if ! gum confirm "Do you confirm these settings?" ;
+then
+    select_configuration
+fi
+
+save_changes
+
+
+

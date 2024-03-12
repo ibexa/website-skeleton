@@ -1,0 +1,92 @@
+#!/bin/bash
+
+#
+# Default settings
+#
+
+export PRIMARY_COLOR="#FF4713"
+export GUM_SPIN_SPINNER_FOREGROUND="$PRIMARY_COLOR"
+export GUM_CHOOSE_HEADER_FOREGROUND="$PRIMARY_COLOR"
+export BORDER_FOREGROUND="$PRIMARY_COLOR"
+export CLI_WIDTH=90
+export IBEXA_DXP_INSTALLED_LOCK_FILE=".ddev/.ibexa-dxp-installed"
+export INSTANCE_SETTINGS_FILE=".ddev/.ibexa-instance-settings"
+
+#
+# Helper functions
+#
+
+function bold() {
+    gum style --bold "$@"
+}
+
+function italic() {
+    gum style --italic "$@"
+}
+
+function underline() {
+    gum style --underline "$@"
+}
+
+function faint() {
+    gum style --faint "$@"
+}
+
+function choose() {
+    local HEADER="$1"
+    shift
+    SELECT=$(gum choose --header "$HEADER" -- "$@")
+}
+
+function execute_with_spinner() {
+    TITLE="$1"
+    shift
+
+    if [ "$VERBOSE_INSTALL" = true ]; then
+        "$@"
+    else
+        gum spin --title "$TITLE" --timeout 0 -- "$@"
+    fi
+}
+
+function banner() {
+    gum style \
+        --foreground "#FF4713" \
+    	  --align center --width 90 \
+    	  "" \
+        "::::     ./.  '..-..'              ''...''               .....'    '....'       " \
+        "oo+/   ./++:/++++++++/:.        .:/++//////:.          -////:' '-://///////-'   " \
+        "o/.    /++++++/:---:++++/'    '/+++/:----/////-      -////:'  -/////:--::////:' " \
+        "  .   /++++:'       ./+++.  .+++/.     .:///:''-' -////:'   ////-'      '-////' " \
+        " ./+   /+++:          '+++/  +++/'    .////:' :///////:'    -///.          .///:" \
+        "/o++   /+++.           :+++''+++:   .////:'   .//////.      :///            ////" \
+        "oo++   -+++:          '+++/  /++/'./+//:'   '-////////:'    -///.          '////" \
+        "oo++    /+++/.       -++++.  .+++++++:'   .:////-''-////:'  '////-        ./////" \
+        "oo++     :+++++::::/++++/'    ./++++/---://///-'    '-////:'  -////:----:///////" \
+        "oo++      '-/++++++++/:.        .:/++//////:.         '-////:' '-://///////-///." \
+        "...          '....''              '.....'               '''''     '....'   :.   "
+
+    gum style \
+        --foreground "#FFFFFF" --faint --align center --width 90 \
+        "" \
+        "~==[ $1 ]==~" \
+        ""
+}
+
+#
+# Custom error handling
+# ---
+# Exits on all errors occurred during runtime
+#
+
+# Immediately stop the execution on error
+set -e
+
+function error_handler() {
+    echo ""
+    echo "❌️  An error occurred. Exiting..."
+    exit 1
+}
+
+# Set custom error handler
+trap 'error_handler' ERR
