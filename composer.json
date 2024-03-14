@@ -18,8 +18,7 @@
         "symfony/runtime": "*",
         "symfony/yaml": "*"
     },
-    "require-dev": {
-    },
+    "require-dev": {},
     "config": {
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
@@ -50,8 +49,7 @@
         "symfony/polyfill-php72": "*"
     },
     "scripts": {
-        "auto-scripts": [
-        ],
+        "auto-scripts": [],
         "post-install-cmd": [
             "@auto-scripts"
         ],
@@ -69,7 +67,7 @@
             "endpoint": "https://api.github.com/repos/ibexa/recipes-dev/contents/index.json?ref=flex/main"
         },
         "branch-alias": {
-            "dev-main": "4.6.x-dev"
+            "dev-main": "5.0.x-dev"
         }
     }
 }
