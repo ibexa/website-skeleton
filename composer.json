@@ -18,8 +18,7 @@
         "symfony/runtime": "*",
         "symfony/yaml": "*"
     },
-    "require-dev": {
-    },
+    "require-dev": {},
     "config": {
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
@@ -50,8 +49,7 @@
         "symfony/polyfill-php72": "*"
     },
     "scripts": {
-        "auto-scripts": [
-        ],
+        "auto-scripts": [],
         "post-install-cmd": [
             "@auto-scripts"
         ],
