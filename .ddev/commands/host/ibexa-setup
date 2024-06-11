@@ -30,6 +30,9 @@ fi
 source $SETTINGS_FILE
 
 if [ ! -f "$PROVISION_FILE_GENERAL" ]; then
+    # Project name
+    ddev config --project-name="$DDEV_SITENAME"
+
     # PHP
     echo "php_version: $PHP_VERSION" > .ddev/config.php.yaml
     echo "👷 Configured PHP version: $PHP_VERSION"
@@ -109,12 +112,6 @@ if [ "$HTTP_CACHE" = "varnish" ]; then
    echo "HTTPCACHE_PURGE_SERVER=$DDEV_PRIMARY_URL" >> .env.local
 
    verbose_output ddev get reithor/ddev-varnish
-
-   # Config file is incorrectly generated, workaround is to hard replace domain name with sed
-   # Can't use -i option because it's not supported in MacOS
-   sed 's/VIRTUAL_HOST=novarnish.<nil>/VIRTUAL_HOST=novarnish.${DDEV_SITENAME}/g' .ddev/docker-compose.varnish-extras.yaml > .ddev/varnish.temp
-   rm .ddev/docker-compose.varnish-extras.yaml
-   mv .ddev/varnish.temp .ddev/docker-compose.varnish-extras.yaml
 fi
 
 echo "👷 Configured HTTP cache: $HTTP_CACHE"
