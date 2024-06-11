@@ -5,18 +5,12 @@
 ## Usage: ibexa-setup
 ## Example: ddev ibexa-setup
 
+source .ddev/commands/host/.utils
+
 [ -z "$SETTINGS_FILE" ] && SETTINGS_FILE="./.ddev/.ibexa-instance-settings"
 [ -z "$PROVISION_FILE_GENERAL" ] && PROVISION_FILE_GENERAL="./.ddev/.ibexa-setup-general-provisioned"
 [ -z "$PROVISION_FILE_SERVICES" ] && PROVISION_FILE_SERVICES="./.ddev/.ibexa-setup-services-provisioned"
 [ -z "$VERBOSE_INSTALL" ] && VERBOSE_INSTALL=false
-
-function verbose_output() {
-    if [ "$VERBOSE_INSTALL" = true ]; then
-        "$@"
-    else
-        "$@" > /dev/null
-    fi
-}
 
 if [ "$VERBOSE_INSTALL" != false ] && [ ! -f "$PROVISION_FILE_GENERAL" ] && [ ! -f "$PROVISION_FILE_SERVICES" ]; then
     clear
