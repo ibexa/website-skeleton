@@ -15,5 +15,5 @@ web_environment:
 hooks:
     post-start:
         - exec-host: "ddev ibexa-configurator"
-        - exec-host: "./.ddev/bin/ibexa-setup.sh"
+        - exec-host: "ddev ibexa-setup"
         - exec-host: "ddev ibexa-installer"

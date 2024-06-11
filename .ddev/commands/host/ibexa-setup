@@ -1,8 +1,9 @@
 #!/bin/bash
 
-#
-# This script reads settings from `ddev ibexa-configurator` and sets up ddev
-#
+## #ddev-generated
+## Description: This script reads settings from `ddev ibexa-configurator` and sets up ddev
+## Usage: ibexa-setup
+## Example: ddev ibexa-setup
 
 [ -z "$SETTINGS_FILE" ] && SETTINGS_FILE="./.ddev/.ibexa-instance-settings"
 [ -z "$PROVISION_FILE_GENERAL" ] && PROVISION_FILE_GENERAL="./.ddev/.ibexa-setup-general-provisioned"
