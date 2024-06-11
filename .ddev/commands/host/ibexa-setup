@@ -134,9 +134,13 @@ if [ "$APP_CACHE" = "redis" ]; then
     echo "# " >> .env.local
     echo "# dxp-installer generated" >> .env.local
     echo "CACHE_POOL=cache.redis" >> .env.local
-    echo "CACHE_DSN=redis:6379" >> .env.local
+    echo "CACHE_DSN=redis@redis:6379" >> .env.local
 
     verbose_output ddev get ddev/ddev-redis-7
+
+    echo "# " >> .ddev/redis/memory.conf
+    echo "# dxp-installer generated" >> .ddev/redis/memory.conf
+    echo "maxmemory-policy volatile-lfu" >> .ddev/redis/memory.conf
 fi
 
 echo "👷 Configured app cache: $APP_CACHE"
