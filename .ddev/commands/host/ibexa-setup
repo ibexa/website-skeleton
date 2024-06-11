@@ -149,7 +149,7 @@ if [ "$SEARCH_ENGINE" = "solr" ]; then
     echo "SOLR_CORE=collection1" >> .env.local
     echo "SOLR_DSN=http://solr:8983/solr" >> .env.local
 
-    verbose_output ddev get reithor/ddev-ibexa-solr
+    verbose_output ddev get ibexa/ddev-solr
 fi
 
 # Elasticsearch
