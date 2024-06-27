@@ -29,8 +29,8 @@ IBEXA_DXP_PRODUCTS=("oss" "headless" "experience" "commerce")
 [ -z "$INSTALL_CLOUD_CONFIG" ] && INSTALL_CLOUD_CONFIG=true
 
 if [ -f "$INSTANCE_SETTINGS_FILE" ]; then
-  # Nothing to do
-  exit 0
+    # Nothing to do
+    exit 0
 fi
 
 function detect_version() {
@@ -286,12 +286,53 @@ function configure_cloud() {
     esac
 }
 
+function format_bool() {
+    if [ $1 ]; then
+        echo "yes"
+    else
+        echo "no"
+    fi
+}
+
+function info_table() {
+    gum style \
+        --border double \
+        --align center --margin "0" --padding "1 2" \
+        "$@"
+}
+
 function print_selected_settings() {
     echo "${1}" # print title
 
-    echo "$PHP_VERSION,$NODE_VERSION,$HTTP_SERVER,$HTTP_CACHE,$DATABASE ($DATABASE_VERSION),$APP_CACHE,$SEARCH_ENGINE,$LABEL_INSTALL_SAMPLE_DATA" \
-        | gum table --print --columns "PHP,Node,Server,HTTP Cache,Database,Cache,Search engine,Sample data"
+    TABLE_APPLICATION=$(info_table "`(bold Application)`" \
+        "" \
+        "`(faint "Product:")` `(bold "$PRODUCT_TYPE")`" \
+        "`(faint "Version:")` `(bold "$PRODUCT_VERSION")`" \
+        "")
 
+    TABLE_SERVICES=$(info_table --border-foreground "#F4B19B" "`(bold Services)`" \
+        "" \
+        "`(faint "HTTP Cache:")` `(bold "$HTTP_CACHE")`" \
+        "`(faint "App Cache:")` `(bold "$APP_CACHE")`" \
+        "`(faint "Search Engine:")` `(bold "$SEARCH_ENGINE")`")
+
+    TABLE_ENVIRONMENT=$(info_table --border-foreground "#FFE6D7" "`(bold Environment)`" \
+        "" \
+        "`(faint "Web Server:")` `(bold "$HTTP_SERVER")`" \
+        "`(faint "PHP:")` `(bold "$PHP_VERSION")`" \
+        "`(faint "Node:")` `(bold "$NODE_VERSION")`" \
+        "`(faint "Database:")` `(bold "$DATABASE")` `(faint "("$DATABASE_VERSION")")`")
+
+    TABLE_EXTRAS=$(info_table --border-foreground "#78B1E0" "`(bold Extras)`" \
+        "" \
+        "`(faint "Install sample data:")` `(bold $(format_bool "$INSTALL_SAMPLE_DATA"))`" \
+        "`(faint "Install Ibexa Cloud config:")` `(bold $(format_bool "$INSTALL_CLOUD_CONFIG"))`" \
+        "`(faint "Install Symfony Profiler:")` `(bold $(format_bool "$INSTALL_PROFILER"))`" \
+        "`(faint "App environment:")` `(bold "$APP_ENV")`")
+
+    ROW_1=$(gum join "$TABLE_APPLICATION" "$TABLE_SERVICES")
+    ROW_2=$(gum join "$TABLE_ENVIRONMENT" "$TABLE_EXTRAS")
+    gum join --align center --vertical "$ROW_1" "$ROW_2"
     echo ""
 }
 
