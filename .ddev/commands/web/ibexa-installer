@@ -64,7 +64,7 @@ echo "✅ Installed Flex recipe"
 
 # Install test fixtures
 if [ "$INSTALL_SAMPLE_DATA" = true ]; then
-    execute_with_spinner "Installing ibexa/test-fixtures package" composer require ibexa/test-fixtures:"$PRODUCT_VERSION" --no-scripts --no-interaction
+    execute_with_spinner "Installing ibexa/test-fixtures package" composer require ibexa/test-fixtures --no-scripts --no-interaction
     echo "✅ Installed ibexa/test-fixtures package"
 fi
 
