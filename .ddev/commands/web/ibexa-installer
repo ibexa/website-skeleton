@@ -77,15 +77,6 @@ fi
 execute_with_spinner "Running Composer scripts..." composer run post-update-cmd
 echo "✅ Scripts finished successfully"
 
-#execute_with_spinner "Dropping database for fresh install" php bin/console doctrine:database:drop --force
-#echo "✅ Database dropped"
-#
-#execute_with_spinner "Removing existing migrations" rm -rf src/Migrations/Ibexa
-#echo "✅ Migrations removed"
-#
-#execute_with_spinner "Clearing cache" php bin/console c:c --env=prod
-#echo "✅ Cache cleared"
-
 execute_with_spinner "Installing database..." php bin/console ibexa:install
 echo "✅ Database installed"
 
@@ -94,6 +85,7 @@ if [ "$SEARCH_ENGINE" = "solr" ] || [ "$SEARCH_ENGINE" = "elasticsearch" ]; then
         execute_with_spinner "Putting Elasticsearch index template" php bin/console ibexa:elasticsearch:put-index-template
         echo "✅ Put Elasticsearch index template"
     fi
+
     execute_with_spinner "Reindexing search data" php bin/console ibexa:reindex
     echo "✅ Reindexed search data"
 fi
@@ -124,7 +116,7 @@ gum style --border double --margin "1 1" --padding "1 1" --width 60 \
     "" \
     "Run `(bold "ddev describe")` for more details"
 
-echo "📧  Run `(bold "ddev mailpit")` to launch Mailpit interface and see catched e-mails"
+echo "📧  Run `(bold "ddev mailpit")` to launch Mailpit interface and see caught e-mails"
 echo "🗄️   Run `(bold "ddev get ddev/ddev-phpmyadmin")` to install PHPMyAdmin"
 echo "🗄️   Run `(bold "ddev querious|sequelace|tableplus|dbeaver")` to launch database client apps"
 echo ""
