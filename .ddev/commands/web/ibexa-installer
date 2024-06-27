@@ -37,7 +37,7 @@ banner "Interactive Installation Tool"
 
 echo "🚀 Installing `(bold "$PRODUCT_TYPE v$PRODUCT_VERSION")`"
 
-if [ "$DXP_EDITION" != "oss" ] || [ "$INSTALL_SAMPLE_DATA" = true ]; then
+if [ "$DXP_EDITION" != "oss" ]; then
     echo "Adding updates.ibexa.co repository to composer.json"
     execute_with_spinner "Updating composer.json..." composer config repositories.ibexa composer https://updates.ibexa.co
 
@@ -64,8 +64,15 @@ echo "✅ Installed Flex recipe"
 
 # Install test fixtures
 if [ "$INSTALL_SAMPLE_DATA" = true ]; then
-    execute_with_spinner "Installing ibexa/test-fixtures package" composer require ibexa/test-fixtures --no-scripts --no-interaction
-    echo "✅ Installed ibexa/test-fixtures package"
+    composer show --available ibexa/test-fixtures > /dev/null 2>&1
+
+    if [[ "$?" == 0 ]]; then
+        execute_with_spinner "Installing ibexa/test-fixtures package" composer require ibexa/test-fixtures --no-scripts --no-interaction
+        echo "✅ Installed ibexa/test-fixtures package"
+    else
+        echo "⚠️ `(bold "ibexa/test-fixtures")` package is unavailable. Cannot install sample data."
+    fi
+
 fi
 
 # Install profiler
