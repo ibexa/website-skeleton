@@ -11,6 +11,12 @@ source .ddev/commands/host/.utils
 [ -z "$PROVISION_FILE_GENERAL" ] && PROVISION_FILE_GENERAL="./.ddev/.ibexa-setup-general-provisioned"
 [ -z "$PROVISION_FILE_SERVICES" ] && PROVISION_FILE_SERVICES="./.ddev/.ibexa-setup-services-provisioned"
 [ -z "$VERBOSE_INSTALL" ] && VERBOSE_INSTALL=false
+[ -z "$PROVISION_FILE_POST_SETUP" ] && PROVISION_FILE_POST_SETUP="./.ddev/.ibexa-setup-post-provisioned"
+
+if [ -f "$PROVISION_FILE_POST_SETUP" ]; then
+  # Nothing to do
+  exit 0
+fi
 
 if [ "$VERBOSE_INSTALL" != false ]; then
     clear
@@ -23,6 +29,7 @@ fi
 
 source $SETTINGS_FILE
 
+# todo
 
-
+touch "$PROVISION_FILE_POST_SETUP"
 ddev restart
