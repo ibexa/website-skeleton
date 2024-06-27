@@ -316,24 +316,24 @@ function select_configuration() {
     fi
 }
 
-function save_changes() {
-    touch "$INSTANCE_SETTINGS_FILE"
-
-    echo "DXP_EDITION=\"$DXP_EDITION\"" >> $INSTANCE_SETTINGS_FILE
-    echo "PRODUCT_TYPE=\"$PRODUCT_TYPE\"" >> $INSTANCE_SETTINGS_FILE
-    echo "PRODUCT_VERSION=\"$PRODUCT_VERSION\"" >> $INSTANCE_SETTINGS_FILE
-    echo "PHP_VERSION=\"$PHP_VERSION\"" >> $INSTANCE_SETTINGS_FILE
-    echo "NODE_VERSION=\"$NODE_VERSION\"" >> $INSTANCE_SETTINGS_FILE
-    echo "DATABASE=\"$DATABASE\"" >> $INSTANCE_SETTINGS_FILE
-    echo "DATABASE_VERSION=\"$DATABASE_VERSION\"" >> $INSTANCE_SETTINGS_FILE
-    echo "HTTP_CACHE=\"$HTTP_CACHE\"" >> $INSTANCE_SETTINGS_FILE
-    echo "APP_CACHE=\"$APP_CACHE\"" >> $INSTANCE_SETTINGS_FILE
-    echo "SEARCH_ENGINE=\"$SEARCH_ENGINE\"" >> $INSTANCE_SETTINGS_FILE
-    echo "INSTALL_SAMPLE_DATA=$INSTALL_SAMPLE_DATA" >> $INSTANCE_SETTINGS_FILE
-    echo "INSTALL_PROFILER=$INSTALL_PROFILER" >> $INSTANCE_SETTINGS_FILE
-    echo "APP_ENV=\"$APP_ENV\"" >> $INSTANCE_SETTINGS_FILE
-    echo "HTTP_SERVER=\"$HTTP_SERVER\"" >> $INSTANCE_SETTINGS_FILE
-    echo "INSTALL_CLOUD_CONFIG=$INSTALL_CLOUD_CONFIG" >> $INSTANCE_SETTINGS_FILE
+function save_settings_file() {
+    {
+        declare -p DXP_EDITION
+        declare -p PRODUCT_TYPE
+        declare -p PRODUCT_VERSION
+        declare -p PHP_VERSION
+        declare -p NODE_VERSION
+        declare -p DATABASE
+        declare -p DATABASE_VERSION
+        declare -p HTTP_CACHE
+        declare -p APP_CACHE
+        declare -p SEARCH_ENGINE
+        declare -p INSTALL_SAMPLE_DATA
+        declare -p INSTALL_PROFILER
+        declare -p APP_ENV
+        declare -p HTTP_SERVER
+        declare -p INSTALL_CLOUD_CONFIG
+    } > "$INSTANCE_SETTINGS_FILE"
 }
 
 #
@@ -359,7 +359,7 @@ then
     select_configuration
 fi
 
-save_changes
+save_settings_file
 
 
 
