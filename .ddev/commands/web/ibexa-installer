@@ -39,8 +39,16 @@ echo "🚀 Installing `(bold "$PRODUCT_TYPE v$PRODUCT_VERSION")`"
 
 if [ "$DXP_EDITION" != "oss" ] || [ "$INSTALL_SAMPLE_DATA" = true ]; then
     echo "Adding updates.ibexa.co repository to composer.json"
-    echo "You might be prompted for repository credentials during installation"
     execute_with_spinner "Updating composer.json..." composer config repositories.ibexa composer https://updates.ibexa.co
+
+    composer search --only-vendor ibexa > /dev/null 2>&1
+
+    if [[ "$?" != 0 ]]; then
+        echo "❗️Cannot access updates.ibexa.co"
+        echo "Please provide your composer auth details to ddev and re-run \"ddev start\". The process will continue using previously configured settings."
+        exit 1
+    fi
+
 fi
 
 composer config extra.runtime.error_handler "\\Ibexa\\Contracts\\Core\\MVC\\Symfony\\ErrorHandler\\Php82HideDeprecationsErrorHandler"
