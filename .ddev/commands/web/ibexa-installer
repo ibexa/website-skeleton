@@ -48,6 +48,8 @@ if [ "$DXP_EDITION" != "oss" ]; then
     composer config repositories.ibexa composer https://updates.ibexa.co --quiet > /dev/null 2>&1
     execute_with_spinner "Checking `(faint updates.ibexa.co)` authorization" composer require "ibexa/$DXP_EDITION:$PRODUCT_VERSION" -W --no-scripts --no-plugins --no-install --no-interaction --quiet
     trap 'error_handler' ERR
+
+    echo "✅ `(faint updates.ibexa.co)` is authorized"
 fi
 
 composer config extra.runtime.error_handler "\\Ibexa\\Contracts\\Core\\MVC\\Symfony\\ErrorHandler\\Php82HideDeprecationsErrorHandler"
