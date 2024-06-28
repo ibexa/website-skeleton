@@ -38,10 +38,8 @@ banner "Interactive Installation Tool"
 echo "🚀 Installing `(bold "$PRODUCT_TYPE v$PRODUCT_VERSION")`"
 
 if [ "$DXP_EDITION" != "oss" ]; then
-    echo "Adding updates.ibexa.co repository to composer.json"
-    execute_with_spinner "Updating composer.json..." composer config repositories.ibexa composer https://updates.ibexa.co
-
-    composer search --only-vendor ibexa > /dev/null 2>&1
+    execute_with_spinner "Adding updates.ibexa.co repository to composer.json..." composer config repositories.ibexa composer https://updates.ibexa.co
+    execute_with_spinner "Checking updates.ibexa.co availability" composer require "ibexa/$DXP_EDITION:$PRODUCT_VERSION" -W --no-scripts --no-plugins --no-install --no-interaction > /dev/null 2>&1
 
     if [[ "$?" != 0 ]]; then
         echo "❗️Cannot access updates.ibexa.co"
