@@ -46,7 +46,7 @@ echo "🚀 Product to be installed: `(bold "$PRODUCT_TYPE v$PRODUCT_VERSION")`"
 if [ "$DXP_EDITION" != "oss" ]; then
     trap 'composer_auth_error' ERR
     composer config repositories.ibexa composer https://updates.ibexa.co --quiet > /dev/null 2>&1
-    composer require "ibexa/$DXP_EDITION:$PRODUCT_VERSION" -W --no-scripts --no-plugins --no-install --no-interaction --quiet > /dev/null 2>&1
+    execute_with_spinner "Checking `(faint updates.ibexa.co)` authorization" composer require "ibexa/$DXP_EDITION:$PRODUCT_VERSION" -W --no-scripts --no-plugins --no-install --no-interaction --quiet
     trap 'error_handler' ERR
 fi
 
