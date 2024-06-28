@@ -26,6 +26,12 @@ ADMIN_PASSWORD=publish
 # Main
 #
 
+function composer_auth_error() {
+    echo "❗️ Cannot access `(faint updates.ibexa.co)`"
+    echo "Please provide your composer auth details to ddev and re-run `(faint "ddev start")`. The process will continue using previously configured settings."
+    exit 1
+}
+
 if [ "$VERBOSE_INSTALL" = false ]; then
     clear
 fi
@@ -35,18 +41,13 @@ git config --global --add safe.directory /var/www/html
 
 banner "Interactive Installation Tool"
 
-echo "🚀 Installing `(bold "$PRODUCT_TYPE v$PRODUCT_VERSION")`"
+echo "🚀 Product to be installed: `(bold "$PRODUCT_TYPE v$PRODUCT_VERSION")`"
 
 if [ "$DXP_EDITION" != "oss" ]; then
-    execute_with_spinner "Adding updates.ibexa.co repository to composer.json..." composer config repositories.ibexa composer https://updates.ibexa.co
-    execute_with_spinner "Checking updates.ibexa.co availability" composer require "ibexa/$DXP_EDITION:$PRODUCT_VERSION" -W --no-scripts --no-plugins --no-install --no-interaction > /dev/null 2>&1
-
-    if [[ "$?" != 0 ]]; then
-        echo "❗️Cannot access updates.ibexa.co"
-        echo "Please provide your composer auth details to ddev and re-run \"ddev start\". The process will continue using previously configured settings."
-        exit 1
-    fi
-
+    trap 'composer_auth_error' ERR
+    composer config repositories.ibexa composer https://updates.ibexa.co --quiet > /dev/null 2>&1
+    composer require "ibexa/$DXP_EDITION:$PRODUCT_VERSION" -W --no-scripts --no-plugins --no-install --no-interaction --quiet > /dev/null 2>&1
+    trap 'error_handler' ERR
 fi
 
 composer config extra.runtime.error_handler "\\Ibexa\\Contracts\\Core\\MVC\\Symfony\\ErrorHandler\\Php82HideDeprecationsErrorHandler"
@@ -82,7 +83,7 @@ fi
 execute_with_spinner "Running Composer scripts..." composer run post-update-cmd
 echo "✅ Scripts finished successfully"
 
-execute_with_spinner "Installing database..." php bin/console ibexa:install
+execute_with_spinner "Installing database schema and data..." php bin/console ibexa:install
 echo "✅ Database installed"
 
 if [ "$SEARCH_ENGINE" = "solr" ] || [ "$SEARCH_ENGINE" = "elasticsearch" ]; then
