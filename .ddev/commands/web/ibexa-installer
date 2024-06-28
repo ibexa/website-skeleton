@@ -124,7 +124,7 @@ gum style --border double --margin "1 1" --padding "1 1" --width 60 \
 
 echo "📧  Run `(bold "ddev mailpit")` to launch Mailpit interface and see caught e-mails"
 echo "🗄️   Run `(bold "ddev get ddev/ddev-phpmyadmin")` to install PHPMyAdmin"
-echo "🗄️   Run `(bold "ddev querious|sequelace|tableplus|dbeaver")` to launch database client apps"
+echo "🗄️   Run `(bold "ddev querious|sequelace|tableplus|dbeaver")` to launch database client app"
 echo ""
 echo "📦️  Run `(bold "ddev composer ...")` to execute Composer commands"
 echo "🐘️  Run `(bold "ddev php ...")` to execute PHP scripts"
