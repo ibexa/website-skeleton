@@ -17,4 +17,3 @@ hooks:
         - exec-host: "ddev ibexa-configurator"
         - exec-host: "ddev ibexa-setup"
         - exec-host: "ddev ibexa-installer"
-        - exec-host: "ddev ibexa-post-setup"
