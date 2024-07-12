@@ -62,7 +62,7 @@ fi
 
 # Installation steps between website-skeleton and edition skeletons are different
 if [ "$INSTALL_FROM_EDITION_SKELETON" == true ]; then
-    execute_with_spinner "Installing composer dependencies..." composer install -W --no-scripts --no-interaction
+    execute_with_spinner "Installing composer dependencies..." composer install --no-scripts --no-interaction
     echo "✅ Composer dependencies installed successfully"
 else
     execute_with_spinner "Installing `(bold ibexa/${DXP_EDITION})` package..." composer require "ibexa/$DXP_EDITION:$PRODUCT_VERSION" -W --no-scripts --no-interaction
