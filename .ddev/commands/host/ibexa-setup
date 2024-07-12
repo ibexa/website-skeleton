@@ -78,11 +78,11 @@ DB_VERSION=$DATABASE_VERSION
 DB_CHARSET=utf8mb4
 DB_COLLATION=utf8mb4_unicode_520_ci
 
-if [ "$DATABASE" = "mariadb" ]; then
+if [ "$DATABASE" == "mariadb" ]; then
     DB_VERSION=mariadb-`ddev exec -s db mysql -V | awk '{print $5}' | sed 's/-.*//'`
 fi
 
-if [ "$DATABASE" = "postgres" ]; then
+if [ "$DATABASE" == "postgres" ]; then
     DB_PORT=5432
     DB_SCHEME=postgresql
     DB_CHARSET=utf8
@@ -98,7 +98,7 @@ echo "DATABASE_COLLATION=${DB_COLLATION}" >> .env.local
 
 echo "👷 Saved database details in .env.local"
 
-if [ "$HTTP_CACHE" = "varnish" ]; then
+if [ "$HTTP_CACHE" == "varnish" ]; then
    echo "# " >> .env.local
    echo "# dxp-installer generated" >> .env.local
    echo "TRUSTED_PROXIES=REMOTE_ADDR" >> .env.local
@@ -111,7 +111,7 @@ fi
 echo "👷 Configured HTTP cache: $HTTP_CACHE"
 
 # Memcached
-if [ "$APP_CACHE" = "memcached" ]; then
+if [ "$APP_CACHE" == "memcached" ]; then
     echo "# " >> .env.local
     echo "# dxp-installer generated" >> .env.local
     echo "CACHE_POOL=\"cache.memcached\"" >> .env.local
@@ -121,7 +121,7 @@ if [ "$APP_CACHE" = "memcached" ]; then
 fi
 
 # Redis
-if [ "$APP_CACHE" = "redis" ]; then
+if [ "$APP_CACHE" == "redis" ]; then
     echo "# " >> .env.local
     echo "# dxp-installer generated" >> .env.local
     echo "CACHE_POOL=cache.redis" >> .env.local
@@ -137,7 +137,7 @@ fi
 echo "👷 Configured app cache: $APP_CACHE"
 
 # Solr
-if [ "$SEARCH_ENGINE" = "solr" ]; then
+if [ "$SEARCH_ENGINE" == "solr" ]; then
     echo "# " >> .env.local
     echo "# dxp-installer generated" >> .env.local
     echo "SEARCH_ENGINE=solr" >> .env.local
@@ -148,7 +148,7 @@ if [ "$SEARCH_ENGINE" = "solr" ]; then
 fi
 
 # Elasticsearch
-if [ "$SEARCH_ENGINE" = "elasticsearch" ]; then
+if [ "$SEARCH_ENGINE" == "elasticsearch" ]; then
     echo "# " >> .env.local
     echo "# dxp-installer generated" >> .env.local
     echo "SEARCH_ENGINE=elasticsearch" >> .env.local
