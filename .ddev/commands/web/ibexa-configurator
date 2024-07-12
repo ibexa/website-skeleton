@@ -342,8 +342,8 @@ function select_configuration() {
     configure_php
     configure_node
     configure_http_server
-    configure_http_cache
     configure_database
+    configure_http_cache
     configure_app_cache
     configure_search_engine
     configure_sample_data
