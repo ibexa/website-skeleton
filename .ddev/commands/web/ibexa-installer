@@ -32,7 +32,7 @@ function composer_auth_error() {
     exit 1
 }
 
-if [ "$VERBOSE_INSTALL" = false ]; then
+if [ "$VERBOSE_INSTALL" == false ]; then
     clear
 fi
 
@@ -76,10 +76,10 @@ else
 fi
 
 # Install test fixtures
-if [ "$INSTALL_SAMPLE_DATA" = true ]; then
+if [ "$INSTALL_SAMPLE_DATA" == true ]; then
     composer show --available ibexa/test-fixtures > /dev/null 2>&1
 
-    if [[ "$?" == 0 ]]; then
+    if [ "$?" == 0 ]; then
         execute_with_spinner "Installing ibexa/test-fixtures package" composer require ibexa/test-fixtures --no-scripts --no-interaction
         echo "✅ Installed ibexa/test-fixtures package"
     else
@@ -89,7 +89,7 @@ if [ "$INSTALL_SAMPLE_DATA" = true ]; then
 fi
 
 # Install profiler
-if [ "$INSTALL_PROFILER" = true ]; then
+if [ "$INSTALL_PROFILER" == true ]; then
     execute_with_spinner "Installing Symfony Profiler" composer require symfony/profiler-pack --no-scripts --no-interaction
     echo "✅ Installed Symfony Profiler"
 fi
@@ -100,7 +100,7 @@ echo "✅ Scripts finished successfully"
 execute_with_spinner "Installing database schema and data..." php bin/console ibexa:install
 echo "✅ Database installed"
 
-if [ "$SEARCH_ENGINE" = "solr" ] || [ "$SEARCH_ENGINE" = "elasticsearch" ]; then
+if [ "$SEARCH_ENGINE" == "solr" ] || [ "$SEARCH_ENGINE" == "elasticsearch" ]; then
     if [ "$SEARCH_ENGINE" = "elasticsearch" ]; then
         execute_with_spinner "Putting Elasticsearch index template" php bin/console ibexa:elasticsearch:put-index-template
         echo "✅ Put Elasticsearch index template"
@@ -111,7 +111,7 @@ if [ "$SEARCH_ENGINE" = "solr" ] || [ "$SEARCH_ENGINE" = "elasticsearch" ]; then
 fi
 
 # Setup sample data
-if [ "$INSTALL_SAMPLE_DATA" = true ]; then
+if [ "$INSTALL_SAMPLE_DATA" == true ]; then
     execute_with_spinner "Installing sample data" php bin/console ibexa:test-fixtures:setup
     echo "✅ Installed sample data"
 fi
@@ -120,7 +120,7 @@ execute_with_spinner "Generating GraphQL schema" php bin/console ibexa:graphql:g
 echo "✅ GraphQL schema generated"
 
 # Setup Ibexa Cloud
-if [ "$INSTALL_CLOUD_CONFIG" = true ]; then
+if [ "$INSTALL_CLOUD_CONFIG" == true ]; then
     execute_with_spinner "Installing Ibexa Cloud configuration" composer ibexa:setup --platformsh
     echo "✅ Installed Ibexa Cloud configuration"
 fi
