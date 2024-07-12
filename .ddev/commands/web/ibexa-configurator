@@ -289,7 +289,7 @@ function configure_cloud() {
 }
 
 function format_bool() {
-    if [ $1 ]; then
+    if [ "$1" == true ]; then
         echo "yes"
     else
         echo "no"
