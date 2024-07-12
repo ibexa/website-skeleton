@@ -37,9 +37,11 @@ function detect_version() {
     if [ "$DXP_EDITION" != "website" ] && [ -f composer.lock ]; then
         MIN_STABILITY="`(jq -r '."minimum-stability"' composer.lock)`"
         PRODUCT_VERSION="`(jq -r '.packages[] | select(.name == "ibexa/oss") | .version' composer.lock | sed 's/^v//')`"
+        INSTALL_FROM_EDITION_SKELETON=true
     else
         MIN_STABILITY="`(jq -r '."minimum-stability"' composer.json)`"
         PRODUCT_VERSION="`(jq -r '.extra."branch-alias"."dev-main"' composer.json)`"
+        INSTALL_FROM_EDITION_SKELETON=false
     fi
 }
 
@@ -374,6 +376,7 @@ function save_settings_file() {
         declare -p APP_ENV
         declare -p HTTP_SERVER
         declare -p INSTALL_CLOUD_CONFIG
+        declare -p INSTALL_FROM_EDITION_SKELETON
     } > "$INSTANCE_SETTINGS_FILE"
 }
 
