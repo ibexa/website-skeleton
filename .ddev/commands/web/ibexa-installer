@@ -43,25 +43,37 @@ banner "Interactive Installation Tool"
 
 echo "🚀 Product to be installed: `(bold "$PRODUCT_TYPE v$PRODUCT_VERSION")`"
 
+# Configure updates.ibexa.co composer repository, check availability (composer auth file could not be linked to ddev)
 if [ "$DXP_EDITION" != "oss" ]; then
     trap 'composer_auth_error' ERR
-    composer config repositories.ibexa composer https://updates.ibexa.co --quiet > /dev/null 2>&1
+    if [ "$INSTALL_FROM_EDITION_SKELETON" == false ]; then
+        composer config repositories.ibexa composer https://updates.ibexa.co --quiet > /dev/null 2>&1
+    fi
     execute_with_spinner "Checking `(bold updates.ibexa.co)` authorization" composer require "ibexa/$DXP_EDITION:$PRODUCT_VERSION" -W --no-scripts --no-plugins --no-install --no-interaction --quiet
     trap 'error_handler' ERR
 
     echo "✅ Repository `(bold updates.ibexa.co)` is reachable"
 fi
 
-composer config extra.runtime.error_handler "\\Ibexa\\Contracts\\Core\\MVC\\Symfony\\ErrorHandler\\Php82HideDeprecationsErrorHandler"
+# PHP 8.x requires custom error handler to suppress deprecation warnings, it's already added to edition skeletons
+if [ "$INSTALL_FROM_EDITION_SKELETON" == false ]; then
+    composer config extra.runtime.error_handler "\\Ibexa\\Contracts\\Core\\MVC\\Symfony\\ErrorHandler\\Php82HideDeprecationsErrorHandler"
+fi
 
-execute_with_spinner "Installing `(bold ibexa/${DXP_EDITION})` package..." composer require "ibexa/$DXP_EDITION:$PRODUCT_VERSION" -W --no-scripts --no-interaction
-echo "✅ Package `(bold ibexa/${DXP_EDITION})` installed successfully"
+# Installation steps between website-skeleton and edition skeletons are different
+if [ "$INSTALL_FROM_EDITION_SKELETON" == true ]; then
+    execute_with_spinner "Installing composer dependencies..." composer install -W --no-scripts --no-interaction
+    echo "✅ Composer dependencies installed successfully"
+else
+    execute_with_spinner "Installing `(bold ibexa/${DXP_EDITION})` package..." composer require "ibexa/$DXP_EDITION:$PRODUCT_VERSION" -W --no-scripts --no-interaction
+    echo "✅ Package `(bold ibexa/${DXP_EDITION})` installed successfully"
 
-execute_with_spinner "Initializing git repository..." git init > /dev/null && git add . > /dev/null && git commit -m "Installed Ibexa DXP" > /dev/null
-echo "✅ Initialized git repository"
+    execute_with_spinner "Initializing git repository..." git init > /dev/null && git add . > /dev/null && git commit -m "Installed Ibexa DXP" > /dev/null
+    echo "✅ Initialized git repository"
 
-execute_with_spinner "Installing Flex recipe..." composer recipes:install ibexa/${DXP_EDITION} --force --reset
-echo "✅ Installed Flex recipe"
+    execute_with_spinner "Installing Flex recipe..." composer recipes:install ibexa/${DXP_EDITION} --force --reset
+    echo "✅ Installed Flex recipe"
+fi
 
 # Install test fixtures
 if [ "$INSTALL_SAMPLE_DATA" = true ]; then
