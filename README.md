@@ -7,7 +7,7 @@ This is a Symfony Flex website skeleton allowing installation of all editions of
 
 For installation instructions of Ibexa DXP see either
 [the official documentation](https://doc.ibexa.co/) or packages for specific editions:
-* [Ibexa Content](https://github.com/ibexa/content)
+* [Ibexa Headless](https://github.com/ibexa/headless)
 * [Ibexa Experience](https://github.com/ibexa/experience)
 * [Ibexa Commerce](https://github.com/ibexa/commerce)
 
