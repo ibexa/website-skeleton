@@ -1,0 +1,20 @@
+#services:
+#    web:
+#        volumes:
+#            - "~/Projects/Web/ibexa/core:/var/www/html/vendor/ibexa/core:ro"
+
+#
+# If you are using Mutagen, you also need to modify .ddev/mutagen/mutagen.yml file.
+# Remove first line containing "#ddev-generated" and add container paths to the list.
+#
+# Example:
+#
+# sync:
+#  defaults:
+#    (...)
+#    ignore:
+#      paths:
+#        - ".idea"
+#        - "/public/var/storage"
+#        - "/vendor/ibexa/core" # Added new path
+#
