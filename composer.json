@@ -6,10 +6,10 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.3",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "symfony/flex": "^1.17|^2"
+        "symfony/flex": "^2"
     },
     "flex-require": {
         "symfony/console": "*",
@@ -63,7 +63,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": true,
-            "require": "5.4.*",
+            "require": "6.4.*",
             "endpoint": "https://api.github.com/repos/ibexa/recipes-dev/contents/index.json?ref=flex/main"
         },
         "branch-alias": {
