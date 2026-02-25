@@ -32,7 +32,12 @@
         "preferred-install": {
             "*": "dist"
         },
-        "sort-packages": true
+        "sort-packages": true,
+        "audit": {
+            "ignore": {
+                "phpoffice/phpspreadsheet": "Fixes don't exist for PHP 7.3. Upgrade your PHP to at least 7.4 and run composer update to apply security fixes."
+            }
+        }
     },
     "autoload": {
         "psr-4": {
