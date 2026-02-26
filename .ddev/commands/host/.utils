@@ -1,0 +1,9 @@
+#!/bin/bash
+
+function verbose_output() {
+    if [ "$VERBOSE_INSTALL" = true ]; then
+        "$@"
+    else
+        "$@" > /dev/null
+    fi
+}
